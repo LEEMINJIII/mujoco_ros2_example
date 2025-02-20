@@ -1,11 +1,23 @@
 /**
- * @file   mujocoSim_node.cpp
+ * @file   executable.cpp
  * @author Jon Woolfrey
- * @data   August 2024
- * @brief  Creates a ROS2 node that interfaces with a MuJoCo simulation.
+ * @email  jonathan.woolfrey@gmail.com
+ * @date   February 2025
+ * @version 1.0
+ * @brief  Starts ROS2 and runs the MuJoCoNode.
+ * 
+ * @details This contains the main() function for the C++ executable.
+ *          Its purpose is to start ROS2, load parameters, then create & run an instance of the
+ *          MuJoCoNode class.
+ * 
+ * @copyright Copyright (c) 2025 Jon Woolfrey
+ * 
+ * @license GNU General Public License V3
+ * 
+ * @see https://mujoco.org/ for more information about MuJoCo
+ * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
-
-#include <MuJoCoInterface.h>
+#include <MuJoCoNode.h>
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -16,6 +28,7 @@ int main(int argc, char *argv[])
     
     auto node = std::make_shared<rclcpp::Node>("mujoco_sim_parameters");                            // Create a node to access parameters
 
+    // Simulation parameters
     int simulationFrequency    = node->declare_parameter<int>("simulation_frequency", 500);
     int visualizationFrequency = node->declare_parameter<int>("visualization_frequency", 20);
     std::string xmlLocation    = node->declare_parameter<std::string>("xml", "");
@@ -41,19 +54,18 @@ int main(int argc, char *argv[])
     
     try
     {
-        auto mujocoSim = std::make_shared<MuJoCoInterface>(xmlLocation,
-                                                           publisherName,
-                                                           subscriberName,
-                                                           control_mode,
-                                                           simulationFrequency,
-                                                           visualizationFrequency);
+        auto mujocoSim = std::make_shared<MuJoCoNode>(xmlLocation,
+                                                      publisherName,
+                                                      subscriberName,
+                                                      control_mode,
+                                                      simulationFrequency,
+                                                      visualizationFrequency);
 
         mujocoSim->set_camera_properties({camera_focal_point[0], camera_focal_point[1], camera_focal_point[2]},
                                           camera_distance,
                                           camera_azimuth, 
                                           camera_elevation,
-                                          camera_orthographic);
-                                      
+                                          camera_orthographic);                             
 
         rclcpp::spin(mujocoSim);                                                                    // Run the simulation indefinitely
     }

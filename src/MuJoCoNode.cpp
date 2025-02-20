@@ -1,24 +1,35 @@
-/*
- * @file   MuJoCoInterface.cpp
+/**
+ * @file   MuJoCoNode.cpp
  * @author Jon Woolfrey
- * @data   August 2024
- * @brief  Source code for the MuJoCoInterface class with ROS2.
+ * @email  jonathan.woolfrey@gmail.com
+ * @date   February 2025
+ * @version 1.0
+ * @brief  A class for connecting a MuJoCo simulation with ROS2 communication.
+ * 
+ * @details This class launches a MuJoCo simulation and provides communication channels in ROS2 for controlling it.
+ * 
+ * @copyright Copyright (c) 2025 Jon Woolfrey
+ * 
+ * @license GNU General Public License V3
+ * 
+ * @see https://mujoco.org/ for more information about MuJoCo
+ * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
  
-#include <MuJoCoInterface.h>
+#include <MuJoCoNode.h>
  
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                         Constructor                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-MuJoCoInterface::MuJoCoInterface(const std::string &xmlLocation,
-                                 const std::string &jointStateTopicName,
-                                 const std::string &jointControlTopicName,
-                                 ControlMode controlMode,
-                                 int simulationFrequency,
-                                 int visualizationFrequency)
-                                 : Node("mujoco_interface_node"),
-                                   _controlMode(controlMode),
-                                   _simFrequency(simulationFrequency)
+MuJoCoNode::MuJoCoNode(const std::string &xmlLocation,
+                       const std::string &jointStateTopicName,
+                       const std::string &jointControlTopicName,
+                       ControlMode controlMode,
+                       int simulationFrequency,
+                       int visualizationFrequency)
+                        : Node("mujoco_node"),
+                          _controlMode(controlMode),
+                          _simFrequency(simulationFrequency)
 {
     // Load the robot model
     
@@ -60,7 +71,7 @@ MuJoCoInterface::MuJoCoInterface(const std::string &xmlLocation,
     // Create joint state publisher and joint command subscriber
     _jointStatePublisher = this->create_publisher<sensor_msgs::msg::JointState>(jointStateTopicName, 1);
     
-    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointControlTopicName, 1,  std::bind(&MuJoCoInterface::joint_command_callback, this, std::placeholders::_1));
+    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointControlTopicName, 1,  std::bind(&MuJoCoNode::joint_command_callback, this, std::placeholders::_1));
 
     // Initialize Graphics Library FrameWork (GLFW)
     if (!glfwInit())
@@ -97,16 +108,16 @@ MuJoCoInterface::MuJoCoInterface(const std::string &xmlLocation,
     
     // Create timers
     _simTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/simulationFrequency)),
-                                        std::bind(&MuJoCoInterface::update_simulation, this));
+                                        std::bind(&MuJoCoNode::update_simulation, this));
 
     _visTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/visualizationFrequency)),
-                                        std::bind(&MuJoCoInterface::update_visualization, this));
+                                        std::bind(&MuJoCoNode::update_visualization, this));
 }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                    Update the simulation                                       //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void MuJoCoInterface::update_simulation()
+void MuJoCoNode::update_simulation()
 {
     if (not _model and not _jointState)
     {
@@ -146,7 +157,7 @@ void MuJoCoInterface::update_simulation()
  //                                    Handle joint commands                                       //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-MuJoCoInterface::joint_command_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+MuJoCoNode::joint_command_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != _model->nq)
     {
@@ -196,11 +207,11 @@ MuJoCoInterface::joint_command_callback(const std_msgs::msg::Float64MultiArray::
  //                          Sets camera viewing position & angle                                  //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-MuJoCoInterface::set_camera_properties(const std::array<double, 3> &focalPoint,
-                                       const double &distance,
-                                       const double &azimuth,
-                                       const double &elevation,
-                                       const bool   &orthographic)
+MuJoCoNode::set_camera_properties(const std::array<double, 3> &focalPoint,
+                                  const double &distance,
+                                  const double &azimuth,
+                                  const double &elevation,
+                                  const bool   &orthographic)
 {
     _camera.lookat[0]    = focalPoint[0];
     _camera.lookat[1]    = focalPoint[1];
@@ -211,11 +222,10 @@ MuJoCoInterface::set_camera_properties(const std::array<double, 3> &focalPoint,
     _camera.orthographic = orthographic;
 }
 
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                    Update the 3D simulation                                    //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void MuJoCoInterface::update_visualization()
+void MuJoCoNode::update_visualization()
 {
     glfwMakeContextCurrent(_window);                                                                // Ensure OpenGL context is current
     
@@ -236,7 +246,7 @@ void MuJoCoInterface::update_visualization()
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                           Destructor                                           //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-MuJoCoInterface::~MuJoCoInterface()
+MuJoCoNode::~MuJoCoNode()
 {
     mj_deleteData(_jointState);
     mj_deleteModel(_model);

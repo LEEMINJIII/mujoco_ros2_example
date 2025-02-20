@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(mujoco_interface)
+project(mujoco_ros2)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -20,19 +20,18 @@ include_directories(${MUJOCO_PATH}/include/mujoco)                              
 include_directories(${MUJOCO_PATH}/include)                                                         # Additional MuJoCo header files
 link_directories(${MUJOCO_PATH}/lib)                                                                # Location of MuJoCo libraries
 
-add_executable(mujoco_interface_node src/mujoco_interface_node.cpp
-                                     src/MuJoCoInterface.cpp)
+add_executable(mujoco_node src/executable.cpp src/MuJoCoNode.cpp)                                   # Define new executable, list source files
     
-target_link_libraries(mujoco_interface_node mujoco glfw)
+target_link_libraries(mujoco_node mujoco glfw)                                                      # Link GLFW libraries to the executable
                                      
-ament_target_dependencies(mujoco_interface_node rclcpp sensor_msgs std_msgs)
+ament_target_dependencies(mujoco_node rclcpp sensor_msgs std_msgs)                                  # List ROS2 dependencies for this executable
 
-install(TARGETS mujoco_interface_node
-        DESTINATION lib/${PROJECT_NAME})
+install(TARGETS mujoco_node
+        DESTINATION lib/${PROJECT_NAME})                                                            # Install so ROS2 can find it
 
 install(DIRECTORY config
                   launch
-                  test
-        DESTINATION share/${PROJECT_NAME}
-)
+                  model
+        DESTINATION share/${PROJECT_NAME})                                                          # Install so ROS2 can find them
+        
 ament_package()

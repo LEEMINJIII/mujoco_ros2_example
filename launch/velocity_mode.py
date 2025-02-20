@@ -6,8 +6,7 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
-    # Get the path to the mujoco_interface package
-    mujoco_interface_dir = get_package_share_directory('mujoco_interface')
+    mujoco_interface_dir = get_package_share_directory('mujoco_ros2')                               # Get the path to mujoco_node package
 
     # Load config files
     config_dir = os.path.join(mujoco_interface_dir, 'config')
@@ -15,14 +14,13 @@ def generate_launch_description():
     sim_params = os.path.join(config_dir, 'default_sim.yaml')
 
     # Define the LaunchConfiguration for xml_path using the path inside mujoco_interface
-    xml = LaunchConfiguration('xml', default=os.path.join(mujoco_interface_dir, 'test/position_mode/scene.xml'))
+    xml = LaunchConfiguration('xml', default=os.path.join(mujoco_interface_dir, 'model/kuka_iiwa_14/scene.xml'))
 
     return LaunchDescription([
-        # Node configuration
         Node
         (
-            package    = 'mujoco_interface',
-            executable = 'mujoco_interface_node',
+            package    = 'mujoco_ros2',
+            executable = 'mujoco_node',
             output     = 'screen',
             parameters =
             [
