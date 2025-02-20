@@ -24,7 +24,7 @@ It can run in `POSITION`, `VELOCITY`, or `TORQUE` mode which may be set via the 
    - [Prerequisites](#prerequisites)
    - [Building the Project](#building-the-project)
    - [Usage](#usage)
-   - [Launching the Interface](#launching-the-interface)
+   - [Launching the Simulation](#launching-the-Simulation)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -70,8 +70,8 @@ Ensure that you have ROS2 and MuJoCo installed on your system.
 
 Clone the repository:
 ```
-git clone https://github.com/Woolfrey/interface_mujoco_ros2
-cd interface_mujoco_ros2
+git clone https://github.com/Woolfrey/mujoco_ros2
+cd mujoco_ros2
 ```
 Build the package:
 ```
@@ -86,19 +86,19 @@ source install/setup.bash
 
 ### Usage
 
-#### Launching the Interface
+#### Launching the Simulation
 
 There are 2 different control modes currently available:
 
 To run **velocity control**, you can launch:
 ```
-ros2 launch mujoco_interface velocity_mode.py
+ros2 launch mujoco velocity_mode.py
 ```
 This requires that the topic `/joint_commands` contains an array of velocites (in rad/s).
 
 To run **torque control**, you can launch:
 ```
-ros2 launch mujoco_interface torque_mode.py
+ros2 launch mujoco torque_mode.py
 ```
 This requires that the topic `/joint_commands` contains an array of torques (Nm).
 
