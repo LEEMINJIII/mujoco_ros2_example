@@ -1,5 +1,5 @@
 <a name="top"></a>
-# MuJoCo-ROS2 Interface
+# MuJoCo-ROS2
 
 > [!NOTE]
 > This project is a work-in-progress, so new features will be added slowly.
