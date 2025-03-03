@@ -18,30 +18,20 @@ It can run in `POSITION`, `VELOCITY`, or `TORQUE` mode which may be set via the 
 >[!TIP]
 > You can download MuJoCo robot models [here](https://github.com/google-deepmind/mujoco_menagerie.git).
 
-- [Features](#features)
 - [Dependencies](#dependencies)
 - [Installation](#installation)
    - [Prerequisites](#prerequisites)
    - [Building the Project](#building-the-project)
    - [Usage](#usage)
-   - [Launching the Simulation](#launching-the-Simulation)
+   - [Launching the Simulation](#launching-the-simulation)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Features
-
-- Launches a MuJoCo simulation.
-- Creates a ROS2 node for communication.
-- Publishes joint state information over ROS2.
-- Provides real-time visualization of the robot and its environment.
-- Allows manual interaction with the simulation.
-
-[⬆️ Back to top.](#top)
 
 ## Dependencies
 
-- ROS2 (Humble Hawksbill or later)
-- MuJoCo
+- [ROS2](https://docs.ros.org/en/humble/index.html) (Humble Hawksbill or later)
+- [MuJoCo 3.2.0](https://mujoco.org/) (or later?)
 - GLFW
 - Standard C++ libraries
 
@@ -59,7 +49,7 @@ Ensure that you have ROS2 and MuJoCo installed on your system.
 2. **Install MuJoCo:**
    Download and install MuJoCo from the [official website](https://mujoco.org/).
 
-3. **Install GLFW:**
+4. **Install GLFW:**
 ```
    sudo apt-get install libglfw3-dev
 ```
@@ -68,14 +58,41 @@ Ensure that you have ROS2 and MuJoCo installed on your system.
 
 ### Building the Project
 
-Clone the repository:
+In the `src/` directory of your ROS2 workspace, clone the repository:
 ```
 git clone https://github.com/Woolfrey/mujoco_ros2
 cd mujoco_ros2
 ```
-Build the package:
+Your directory structure should look something like this:
 ```
-colcon build
+ros2_workspace/
+├── build/
+├── install/
+├── log/
+└── src/
+    └── mujoco_ros2/
+        ├── config/
+        ├── include/
+        ├── launch/
+        ├── model/
+        ├── src/
+        ├── CMakeLists.txt
+        ├── LICENSE
+        ├── package.xml
+        └── README.md
+```
+In `CMakeLists.txt` you need to tell the compiler where to find the MuJoCo header files:
+```
+set(MUJOCO_PATH "/opt/mujoco/mujoco-3.2.0") # UPDATE THIS TO YOUR MUJOCO PATH
+include_directories(${MUJOCO_PATH}/include/mujoco)                                                  # MuJoCo header files
+include_directories(${MUJOCO_PATH}/include)                                                         # Additional MuJoCo header files
+link_directories(${MUJOCO_PATH}/lib)                                                                # Location of MuJoCo libraries
+```
+As you can see, I've installed it in `/opt/mujoco/mujoco-3.2.0` but you should change it to match your directory and version.
+
+Navigate back to the root of your ROS2 workspace and build the package:
+```
+colcon build --packages-select mujoco_ros2
 ```
 Source the ROS2 workspace:
 ```
@@ -88,7 +105,8 @@ source install/setup.bash
 
 #### Launching the Simulation
 
-There are 2 different control modes currently available:
+> [!NOTE]
+> I'm currently only running velocity mode. Torque mode will be made available soon.
 
 To run **velocity control**, you can launch:
 ```
@@ -96,26 +114,12 @@ ros2 launch mujoco velocity_mode.py
 ```
 This requires that the topic `/joint_commands` contains an array of velocites (in rad/s).
 
-To run **torque control**, you can launch:
-```
-ros2 launch mujoco torque_mode.py
-```
-This requires that the topic `/joint_commands` contains an array of torques (Nm).
-
-> [!TIP]
-> In torque mode, gravity and Coriolis torques are automatically compensated for.
 
 [⬆️ Back to top.](#top)
 
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit pull requests.
-
-1. Fork the Project
-2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
-3. Commit your Changes (git commit -m 'Add some AmazingFeature')
-4. Push to the Branch (git push origin feature/AmazingFeature)
-5. Open a Pull Request
 
 [⬆️ Back to top.](#top)
 
