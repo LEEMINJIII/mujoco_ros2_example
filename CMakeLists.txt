@@ -29,8 +29,7 @@ ament_target_dependencies(mujoco_node rclcpp sensor_msgs std_msgs)              
 install(TARGETS mujoco_node
         DESTINATION lib/${PROJECT_NAME})                                                            # Install so ROS2 can find it
 
-install(DIRECTORY config
-                  launch
+install(DIRECTORY launch
                   model
         DESTINATION share/${PROJECT_NAME})                                                          # Install so ROS2 can find them
         
