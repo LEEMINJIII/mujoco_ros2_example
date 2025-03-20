@@ -21,40 +21,22 @@
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                         Constructor                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-MuJoCoNode::MuJoCoNode(const std::string &xmlLocation,
-                       const std::string &jointStateTopicName,
-                       const std::string &jointControlTopicName,
-                       ControlMode controlMode,
-                       int simulationFrequency,
-                       int visualizationFrequency)
-                        : Node("mujoco_node"),
-                          _controlMode(controlMode),
-                          _simFrequency(simulationFrequency)
+MuJoCoNode::MuJoCoNode(const std::string &xmlLocation) : Node("mujoco_node")
 {
-    // Load the robot model
-    
-    char error[1000] = "Could not load binary model";
-    
-    _model = mj_loadXML(xmlLocation.c_str(), nullptr, error, 1000);
+    // Declare & get parameters for this node
+    std::string jointStateTopicName   = this->declare_parameter<std::string>("joint_state_topic_name", "joint_state");
+    std::string jointCommandTopicName = this->declare_parameter<std::string>("joint_command_topic_name", "joint_commands");
+    std::string controlMode           = this->declare_parameter<std::string>("control_mode", "TORQUE");
+    _simFrequency                     = this->declare_parameter<int>("simulation_frequency", 1000);
+    int visualisationFrequency        = this->declare_parameter<int>("visualisation_frequency", 10);
 
-    if (not _model)
-    {
-        RCLCPP_ERROR(this->get_logger(), "Error loading model: %s", error);
-        
-        rclcpp::shutdown();                                                                         // Shut down action server
-    }
-
-    _model->opt.timestep = 1/(double)_simFrequency;                                                 // Match MuJoCo to node frequency
-   
-    std::string ctrlMode;
+    // Load the robot model     
+    char errorMessage[1000] = "Could not load model.";                                              // We need this as an input argument.   
+    _model = mj_loadXML(xmlLocation.c_str(), nullptr, errorMessage, 1000);                          // Try to load the model  
+    if (not _model) throw std::runtime_error("[ERROR] [MuJoCo NODE] Problem loading model: " + std::string(errorMessage)); 
+    _model->opt.timestep = 1/((double)_simFrequency);                                               // Match MuJoCo to node frequency
     
-         if(controlMode == POSITION) ctrlMode = "POSITION";
-    else if(controlMode == VELOCITY) ctrlMode = "VELOCITY";
-    else if(controlMode == TORQUE)   ctrlMode = "TORQUE";
-    
-    RCLCPP_INFO(this->get_logger(), "Control mode set to %s.", ctrlMode.c_str());
-
-    // Resize arrays based on the number of joints in the model
+     // Resize arrays based on the number of joints in the model
     _jointState = mj_makeData(_model);                                                              // Initialize joint state
     _jointStateMessage.name.resize(_model->nq);
     _jointStateMessage.position.resize(_model->nq);
@@ -63,37 +45,41 @@ MuJoCoNode::MuJoCoNode(const std::string &xmlLocation,
     _torqueInput.resize(_model->nq, 0.0);
 
     // Record joint names
-    for (int i = 0; i < _model->nq; ++i)
-    {
-        _jointStateMessage.name[i] = mj_id2name(_model, mjOBJ_JOINT, i);
+    for (int i = 0; i < _model->nq; ++i) _jointStateMessage.name[i] = mj_id2name(_model, mjOBJ_JOINT, i);
+       
+    // Set the control mode  
+         if (controlMode == "POSITION") _controlMode = POSITION;
+    else if (controlMode == "VELOCITY") _controlMode = VELOCITY;
+    else if (controlMode == "TORQUE"  ) _controlMode = TORQUE;
+    else
+    {   
+        throw std::invalid_argument("[ERROR] [MuJoCo NODE] Unknown control mode. "
+                                    "Argument was '" + controlMode + "', but expected 'POSITION', 'VELOCITY', or 'TORQUE'.");
     }
 
-    // Create joint state publisher and joint command subscriber
-    _jointStatePublisher = this->create_publisher<sensor_msgs::msg::JointState>(jointStateTopicName, 1);
+    // Create timers
+    _simTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/_simFrequency)),
+                                        std::bind(&MuJoCoNode::update_simulation, this));
+                                        
+    _visTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/visualisationFrequency)),
+                                        std::bind(&MuJoCoNode::update_visualization, this));
+
+   // Create joint state publisher and joint command subscriber
+    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointCommandTopicName, 1,  std::bind(&MuJoCoNode::joint_command_callback, this, std::placeholders::_1));
     
-    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointControlTopicName, 1,  std::bind(&MuJoCoNode::joint_command_callback, this, std::placeholders::_1));
-
+    _jointStatePublisher = this->create_publisher<sensor_msgs::msg::JointState>(jointStateTopicName, 1);
+                      
+             
     // Initialize Graphics Library FrameWork (GLFW)
-    if (!glfwInit())
-    {
-        RCLCPP_ERROR(this->get_logger(), "Failed to initialize Graphics Library FrameWork (GLFW).");
-        rclcpp::shutdown();
-        return;
-    }
+    if (not glfwInit()) throw std::runtime_error("Failed to initialise Graphics Library Framework (GLFW).");
 
-    // Create a GLFW window
     _window = glfwCreateWindow(1200, 900, "MuJoCo Visualization", nullptr, nullptr);
-    if (!_window)
-    {
-        RCLCPP_ERROR(this->get_logger(), "Failed to create GLFW window");
-        glfwTerminate();
-        rclcpp::shutdown();
-        return;
-    }
-
+    
+    if (not _window) throw std::runtime_error("Failed to create Graphics Library Framework (GLFW) window.");
+    
     // Make the OpenGL context current
     glfwMakeContextCurrent(_window);
-    glfwSwapInterval(1);  // Set swap interval for vsync
+    glfwSwapInterval(1);                    // NOTE TO SELF: CHECK THIS ARGUMENT
 
     // Initialize MuJoCo rendering context
     mjv_defaultCamera(&_camera);
@@ -101,17 +87,26 @@ MuJoCoNode::MuJoCoNode(const std::string &xmlLocation,
     mjv_defaultPerturb(&_perturbation);
     mjr_defaultContext(&_context);
     mjv_makeScene(_model, &_scene, 1000);
+    
+    // Declare & get parameters for camera, visualisation
+    _camera.azimuth      = this->declare_parameter<double>("camera_azimuth", 135);    
+    _camera.distance     = this->declare_parameter<double>("camera_distance", 2.5);
+    _camera.elevation    = this->declare_parameter<double>("camera_elevation", -35);
+    _camera.orthographic = this->declare_parameter<bool>("camera_orthographic", true);
+    
+    auto focalPoint = this->declare_parameter<std::vector<double>>("camera_focal_point", {0.0, 0.0, 0.5});
+    
+    for(int i = 0; i < 3; ++i) _camera.lookat[i] = focalPoint[i]; 
 
     // Create MuJoCo rendering context
     glfwMakeContextCurrent(_window);
     mjr_makeContext(_model, &_context, mjFONTSCALE_100);
     
-    // Create timers
-    _simTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/simulationFrequency)),
-                                        std::bind(&MuJoCoNode::update_simulation, this));
+    RCLCPP_INFO(this->get_logger(), "MuJoCo simulation initiated. "
+                                    "Publishing the joint state to '%s' topic. "
+                                    "Subscribing to joint %s commands via '%s' topic.",
+                                    jointStateTopicName.c_str(), controlMode.c_str(), jointCommandTopicName.c_str());
 
-    _visTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/visualizationFrequency)),
-                                        std::bind(&MuJoCoNode::update_visualization, this));
 }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +116,7 @@ void MuJoCoNode::update_simulation()
 {
     if (not _model and not _jointState)
     {
-        RCLCPP_ERROR(this->get_logger(), "MuJoCo model or data is not initialized.");
+        RCLCPP_ERROR(this->get_logger(), "MuJoCo model or data is not initialized. How did that happen?");
         return;
     }
 
@@ -150,7 +145,6 @@ void MuJoCoNode::update_simulation()
     _jointStateMessage.header.stamp = this->get_clock()->now();                                     // Add current time stamp (for rqt)
     
     _jointStatePublisher->publish(_jointStateMessage);                                              // Publish the joint state message
-
 }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,25 +195,6 @@ MuJoCoNode::joint_command_callback(const std_msgs::msg::Float64MultiArray::Share
             }
         }
     }
-}
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
- //                          Sets camera viewing position & angle                                  //
-////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-MuJoCoNode::set_camera_properties(const std::array<double, 3> &focalPoint,
-                                  const double &distance,
-                                  const double &azimuth,
-                                  const double &elevation,
-                                  const bool   &orthographic)
-{
-    _camera.lookat[0]    = focalPoint[0];
-    _camera.lookat[1]    = focalPoint[1];
-    _camera.lookat[2]    = focalPoint[2];
-    _camera.distance     = distance; 
-    _camera.azimuth      = azimuth;    
-    _camera.elevation    = elevation;
-    _camera.orthographic = orthographic;
 }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
