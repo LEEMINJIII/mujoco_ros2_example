@@ -44,32 +44,13 @@ class MuJoCoNode : public rclcpp::Node
          * @param simulationFrequency The rate in Hz to update the simulation
          * @param visualisationFrequency The rate with which to refresh the 3D rendering of the robot, environment
          */
-        MuJoCoNode(const std::string &xmlLocation,
-                   const std::string &jointStateTopicName,
-                   const std::string &jointControlTopicName,
-                   ControlMode controlMode = TORQUE,
-                   int simulationFrequency = 500,
-                   int visualizationFrequency = 20);
+        MuJoCoNode(const std::string &xmlLocation);
         
        /**
         * @brief Deconstructor.
         */
         ~MuJoCoNode();
         
-        /**
-         * @brief Sets the viewing properties in the window.
-         * @param focalPoint Defines the x, y, z coordinate for the focus of the camera.
-         * @param distance The distance from said focal point to the camera.
-         * @param azimuth The angle of rotation around the focal point.
-         * @param elevation The angle of the line of sight relative to the ground plane.
-         * @param orthographic Type of projection. True for orthographics, false for perspective.
-         */
-        void
-        set_camera_properties(const std::array<double,3> &focalPoint,
-                              const double &distance = 2.0,
-                              const double &azimuth = 140.0,
-                              const double &elevation = -45.0,
-                              const bool   &orthographic = false);
     private:
 
         std::vector<double> _torqueInput;                                                           ///< Used to store joint commands in torque mode
@@ -96,14 +77,8 @@ class MuJoCoNode : public rclcpp::Node
 
         sensor_msgs::msg::JointState _jointStateMessage;                                            ///< For publishing joint state data over ROS2
         
-        int _simFrequency = 500;                                                                    ///< Speed at which the frequency runs
+        int _simFrequency = 1000;                                                                   ///< Speed at which the frequency runs
     
-        bool _cameraOrthographic = false;                                                           ///< Sets the type of projection
-        double _cameraAzimuth    = 45.0;                                                            ///< Rotation around camera focal point
-        double _cameraDistance   = 2.5;                                                             ///< Distance from camera focal point
-        double _cameraElevation  = -30;                                                             ///< Dictates height of camera
-        std::vector<double> _cameraFocalPoint = {0.0, 0.0, 1.0};                                    ///< Where the camera is directed at
-      
         /**
          * @brief Updates the robot state, publishes joint state information.
          */
