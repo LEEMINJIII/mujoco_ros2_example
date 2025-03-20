@@ -28,7 +28,7 @@ MuJoCoNode::MuJoCoNode(const std::string &xmlLocation) : Node("mujoco_node")
     std::string jointCommandTopicName = this->declare_parameter<std::string>("joint_command_topic_name", "joint_commands");
     std::string controlMode           = this->declare_parameter<std::string>("control_mode", "TORQUE");
     _simFrequency                     = this->declare_parameter<int>("simulation_frequency", 1000);
-    int visualisationFrequency        = this->declare_parameter<int>("visualisation_frequency", 10);
+    int visualisationFrequency        = this->declare_parameter<int>("visualisation_frequency", 20);
 
     // Load the robot model     
     char errorMessage[1000] = "Could not load model.";                                              // We need this as an input argument.   

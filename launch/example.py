@@ -23,7 +23,7 @@ def generate_launch_description():
                         {"joint_command_topic_name" : "joint_commands"},
                         {"control_mode" : "VELOCITY"},
                         {"simulation_frequency" : 1000},
-                        {"visualisation_frequency" : 10},
+                        {"visualisation_frequency" : 20},
                         {"camera_focal_point": [0.0, 0.0, 0.25]},
                         {"camera_distance": 2.5},
                         {"camera_azimuth": 135.0},
