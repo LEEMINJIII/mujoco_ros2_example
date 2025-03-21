@@ -1,5 +1,12 @@
 # MuJoCo - ROS2
 
+- [About](#about)
+- [Installation](#installation)
+- [Launching the Simulation](#launching-the-simulation)
+- [Contributing](#contributing)
+- [License](#license)
+
+## About
 This package enables a basic MuJoCo simulation environment with ROS2 communication channels for controlling a robot. It publishes a `sensor_msgs/msg/JointState` topic containing the position, velocity, and effort of the joints, and accepts commands via a `std_msgs::Float64MultiArray` topic. It can run in `POSITION`, `VELOCITY`, or `TORQUE` mode which can be set as a parameter in a launch file.
 
 <p align="center">
