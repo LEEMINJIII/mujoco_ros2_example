@@ -1,6 +1,7 @@
 # MuJoCo - ROS2
 
 - [About](#about)
+- [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Launching the Simulation](#launching-the-simulation)
 - [Contributing](#contributing)
@@ -24,6 +25,8 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
    <em>Figure 2: The Kuka iiwa14 model from the MuJoCo Menagerie.</em>
 </p>
 
+[⬆️ Back to top.](#mujoco---ros2)
+
 ## Dependencies
 
 - [Ubuntu 22.04](https://ubuntu.com/download/desktop) or later,
@@ -33,6 +36,8 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
 
 > [!NOTE]
 > This package was built and tested with Ubuntu 22.04, using ROS2 Humble Hawksbill, and MuJoCo 3.2.0.
+
+[⬆️ Back to top.](#mujoco---ros2)
 
 ## Installation
 
