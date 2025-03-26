@@ -13,7 +13,7 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
 <p align="center">
    <img src="doc/mujoco_node.png" width="600" height="auto" alt="Diagram showing interaction with mujoco node."/>
    <br>
-   <em>Figure 1: Your custome control node can interact with the mujoco node through two topics.</em>
+   <em>Figure 1: Your custom control node can interact with the mujoco node through two topics.</em>
 </p>
 
 >[!TIP]
