@@ -49,11 +49,23 @@ Ensure that you have ROS2 and MuJoCo installed on your system.
    
    Follow the [ROS2 installation guide](https://docs.ros.org/en/foxy/Installation.html) for your operating system.
 
-3. **Install MuJoCo:**
+2. **Install MuJoCo:**
    
    Download and install MuJoCo from the [official website](https://mujoco.org/).
 
    Mine is installed in `/opt/mujoco/mujoco-3.2.0`
+
+   Next, modify your `.bashrc` file:
+   ```
+   gedit ~/.bashrc
+   ```
+   Add the following lines of code at the bottom:
+   ```
+   export MUJOCO_PY_MUJOCO_PATH=/opt/mujoco/mujoco-3.2.0
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/mujoco/mujoco-3.2.0/bin
+   export LD_LIBRARY_PATH=/opt/mujoco/mujoco-3.2.0/lib:$LD_LIBRARY_PATH
+   ```
+   Change all instances of `opt/mujoco/mujoco-3.2.0` to match your installation location, and your version.
 
 4. **Install GLFW:**
 ```
