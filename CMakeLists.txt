@@ -20,7 +20,8 @@ include_directories(${MUJOCO_PATH}/include/mujoco)                              
 include_directories(${MUJOCO_PATH}/include)                                                         # Additional MuJoCo header files
 link_directories(${MUJOCO_PATH}/lib)                                                                # Location of MuJoCo libraries
 
-add_executable(mujoco_node src/executable.cpp src/MuJoCoNode.cpp)                                   # Define new executable, list source files
+add_executable(mujoco_node src/nodes/executable.cpp
+                           src/mujoco_node.cpp)                                                     # Define new executable, list source files
     
 target_link_libraries(mujoco_node mujoco glfw)                                                      # Link GLFW libraries to the executable
                                      

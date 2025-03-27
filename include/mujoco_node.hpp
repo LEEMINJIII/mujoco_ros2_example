@@ -1,5 +1,5 @@
 /**
- * @file   MuJoCoNode.h
+ * @file   mujoco_node.hpp
  * @author Jon Woolfrey
  * @email  jonathan.woolfrey@gmail.com
  * @date   February 2025
@@ -16,8 +16,8 @@
  * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
 
-#ifndef MUJOCONODE_H
-#define MUJOCONODE_H
+#ifndef MUJOCO_NODE_H
+#define MUJOCO_NODE_H
 
 #include <GLFW/glfw3.h>                                                                             // Graphics Library Framework; for visualisation
 #include <iostream>                                                                                 // std::cerr, std::cout

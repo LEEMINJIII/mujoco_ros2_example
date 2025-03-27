@@ -16,7 +16,7 @@
  * @see https://mujoco.org/ for more information about MuJoCo
  * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
-#include <MuJoCoNode.h>
+#include <mujoco_ros2/mujoco_node.hpp>
 #include <iostream>
 
 int main(int argc, char *argv[])

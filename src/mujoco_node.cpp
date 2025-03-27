@@ -1,5 +1,5 @@
 /**
- * @file   MuJoCoNode.cpp
+ * @file   mujoco_node.cpp
  * @author Jon Woolfrey
  * @email  jonathan.woolfrey@gmail.com
  * @date   February 2025
@@ -16,8 +16,8 @@
  * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
  
-#include <MuJoCoNode.h>
- 
+#include <mujoco_ros2/mujoco_node.hpp>
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                         Constructor                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
