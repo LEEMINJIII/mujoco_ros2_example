@@ -160,7 +160,7 @@ The `parameter` argument can be changed based on your preferences:
 
 After you've installed the package, and sourced the workspace, you can run:
 ```
-ros2 run mujoco_ros2 example.py
+ros2 launch mujoco_ros2 example.py
 ```
 
 And you should see the following:
