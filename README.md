@@ -1,13 +1,5 @@
 # MuJoCo - ROS2
 
-- [About](#about)
-- [Dependencies](#dependencies)
-- [Installation](#installation)
-- [Launching the Simulation](#launching-the-simulation)
-- [Contributing](#contributing)
-- [License](#license)
-
-## About
 This package enables a basic MuJoCo simulation environment with ROS2 communication channels for controlling a robot. It publishes a `sensor_msgs/msg/JointState` topic containing the position, velocity, and effort of the joints, and accepts commands via a `std_msgs::Float64MultiArray` topic. It can run in `POSITION`, `VELOCITY`, or `TORQUE` mode which can be set as a parameter in a launch file.
 
 <p align="center">
@@ -25,9 +17,18 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
    <em>Figure 2: The Kuka iiwa14 model from the MuJoCo Menagerie.</em>
 </p>
 
+#### :compass: Navigation
+
+- [Dependencies](#link-dependencies)
+- [Installation](#floppy_disk-installation)
+- [Launching the Simulation](#launching-the-simulation)
+- [Contributing](#contributing)
+- [License](#license)
+
+
 [⬆️ Back to top.](#mujoco---ros2)
 
-## Dependencies
+## :link: Dependencies
 
 - [Ubuntu 22.04](https://ubuntu.com/download/desktop) or later,
 - [ROS2](https://docs.ros.org/en/humble/index.html) (Humble Hawksbill or later)
@@ -39,7 +40,7 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
 
 [⬆️ Back to top.](#mujoco---ros2)
 
-## Installation
+## :floppy_disk: Installation
 
 ### Prerequisites
 
