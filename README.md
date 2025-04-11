@@ -1,13 +1,5 @@
-# MuJoCo - ROS2
+# :bridge_at_night: MuJoCo - ROS2
 
-- [About](#about)
-- [Dependencies](#dependencies)
-- [Installation](#installation)
-- [Launching the Simulation](#launching-the-simulation)
-- [Contributing](#contributing)
-- [License](#license)
-
-## About
 This package enables a basic MuJoCo simulation environment with ROS2 communication channels for controlling a robot. It publishes a `sensor_msgs/msg/JointState` topic containing the position, velocity, and effort of the joints, and accepts commands via a `std_msgs::Float64MultiArray` topic. It can run in `POSITION`, `VELOCITY`, or `TORQUE` mode which can be set as a parameter in a launch file.
 
 <p align="center">
@@ -25,9 +17,18 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
    <em>Figure 2: The Kuka iiwa14 model from the MuJoCo Menagerie.</em>
 </p>
 
-[⬆️ Back to top.](#mujoco---ros2)
+#### :compass: Navigation
 
-## Dependencies
+- [Dependencies](#link-dependencies)
+- [Installation](#floppy_disk-installation)
+- [Launching the Simulation](#rocket-launching-the-simulation)
+- [Contributing](#handshake-contributing)
+- [License](#scroll-license)
+
+
+[:top: Back to top.](#bridge_at_night-mujoco---ros2)
+
+## :link: Dependencies
 
 - [Ubuntu 22.04](https://ubuntu.com/download/desktop) or later,
 - [ROS2](https://docs.ros.org/en/humble/index.html) (Humble Hawksbill or later)
@@ -37,9 +38,9 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
 > [!NOTE]
 > This package was built and tested with Ubuntu 22.04, using ROS2 Humble Hawksbill, and MuJoCo 3.2.0.
 
-[⬆️ Back to top.](#mujoco---ros2)
+[:top: Back to top.](#bridge_at_night-mujoco---ros2)
 
-## Installation
+## :floppy_disk: Installation
 
 ### Prerequisites
 
@@ -49,18 +50,30 @@ Ensure that you have ROS2 and MuJoCo installed on your system.
    
    Follow the [ROS2 installation guide](https://docs.ros.org/en/foxy/Installation.html) for your operating system.
 
-3. **Install MuJoCo:**
+2. **Install MuJoCo:**
    
    Download and install MuJoCo from the [official website](https://mujoco.org/).
 
    Mine is installed in `/opt/mujoco/mujoco-3.2.0`
+
+   Next, modify your `.bashrc` file:
+   ```
+   gedit ~/.bashrc
+   ```
+   Add the following lines of code at the bottom:
+   ```
+   export MUJOCO_PY_MUJOCO_PATH=/opt/mujoco/mujoco-3.2.0
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/mujoco/mujoco-3.2.0/bin
+   export LD_LIBRARY_PATH=/opt/mujoco/mujoco-3.2.0/lib:$LD_LIBRARY_PATH
+   ```
+   Change all instances of `opt/mujoco/mujoco-3.2.0` to match your installation location, and your version.
 
 4. **Install GLFW:**
 ```
    sudo apt-get install libglfw3-dev
 ```
 
-[⬆️ Back to top.](#mujoco---ros2)
+[:top: Back to top.](#bridge_at_night-mujoco---ros2)
 
 ### Building the Project
 
@@ -104,9 +117,9 @@ Source the ROS2 workspace:
 source install/setup.bash
 ```
 
-[⬆️ Back to top.](#mujoco---ros2)
+[:top: Back to top.](#bridge_at_night-mujoco---ros2)
 
-## Launching the Simulation
+## :rocket: Launching the Simulation
 
 There is a simple launch file that demonstrates how to run it in `mujoco_ros2/launch/example.py`. It launches the node:
 ```
@@ -148,7 +161,7 @@ The `parameter` argument can be changed based on your preferences:
 
 After you've installed the package, and sourced the workspace, you can run:
 ```
-ros2 run mujoco_ros2 example.py
+ros2 launch mujoco_ros2 example.py
 ```
 
 And you should see the following:
@@ -170,16 +183,21 @@ You can alter the parameters to your liking.
 > [!NOTE]
 > So far I've only tested VELOCITY mode robustly. TORQUE mode did work, but my controller hadn't been properly tuned. It will be double-checked in the near future.
 
-[⬆️ Back to top.](#mujoco---ros2)
+[:top: Back to top.](#bridge_at_night-mujoco---ros2)
 
-## Contributing
+## :handshake: Contributing
 
-I made this package just to test my own control software. More features may be added when I find the time and/or need, but contributions are welcome! Feel free to fork it, modify it, and issue a pull request.
+Contributions to this repositore are welcome! Feel free to:
+1. Fork the repository,
+2. Implement your changes / improvements, then
+3. Issue a pull request.
 
-[⬆️ Back to top.](#mujoco---ros2)
+If you're looking for ideas, you can always check the [Issues tab](https://github.com/Woolfrey/mujoco_ros2/issues) for those with :raising_hand: [OPEN]. These are things I'd like to implement, but don't have time for. It'd be much appreciated, and you'll be tagged as a contributor :sunglasses:
 
-## License
+[:top: Back to top.](#building_construction-software-template-repository)
 
-Distributed under the GNU General Public License. See LICENSE for more information.
+## :scroll: License
 
-[⬆️ Back to top.](#mujoco---ros2)
+This software package is licensed under the [GNU General Public License v3.0 (GPL-3.0)](https://choosealicense.com/licenses/gpl-3.0/). You are free to use, modify, and distribute this package, provided that any modified versions also comply with the GPL-3.0 license. All modified versions must make the source code available and be licensed under GPL-3.0. The license also ensures that the software remains free and prohibits the use of proprietary restrictions such as Digital Rights Management (DRM) and patent claims. For more details, please refer to the [full license text](LICENSE).
+
+[:top: Back to top.](#building_construction-software-template-repository)
