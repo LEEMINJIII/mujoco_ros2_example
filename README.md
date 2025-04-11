@@ -25,7 +25,6 @@ This package enables a basic MuJoCo simulation environment with ROS2 communicati
 - [Contributing](#handshake-contributing)
 - [License](#scroll-license)
 
-
 [:top: Back to top.](#bridge_at_night-mujoco---ros2)
 
 ## :link: Dependencies
