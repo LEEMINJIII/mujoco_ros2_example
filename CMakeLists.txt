@@ -1,3 +1,6 @@
+####################################################################################################
+#                                         PROJECT INFORMATION                                      #
+####################################################################################################
 cmake_minimum_required(VERSION 3.5)
 project(mujoco_ros2)
 
@@ -6,7 +9,9 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-# Find dependencies
+####################################################################################################
+#                                          DEPENDENCIES                                            #
+####################################################################################################
 find_package(ament_cmake REQUIRED)                                                                  # So ROS2 can compile?
 find_package(glfw3 REQUIRED)                                                                        # Graphics Library FrameWork
 find_package(rclcpp REQUIRED)                                                                       # ROS2 C++ libraries
@@ -20,12 +25,20 @@ include_directories(${MUJOCO_PATH}/include/mujoco)                              
 include_directories(${MUJOCO_PATH}/include)                                                         # Additional MuJoCo header files
 link_directories(${MUJOCO_PATH}/lib)                                                                # Location of MuJoCo libraries
 
-add_executable(mujoco_node src/nodes/executable.cpp
-                           src/mujoco_node.cpp)                                                     # Define new executable, list source files
+####################################################################################################
+#                                           EXECUTABLES                                            #
+####################################################################################################
+add_executable(mujoco_node src/nodes/mujoco_node.cpp
+                           src/mujoco_ros.cpp)                                                      # Define new executable, list source files
     
 target_link_libraries(mujoco_node mujoco glfw)                                                      # Link GLFW libraries to the executable
                                      
 ament_target_dependencies(mujoco_node rclcpp sensor_msgs std_msgs)                                  # List ROS2 dependencies for this executable
+
+
+####################################################################################################
+#                                           INSTALLATION                                           #
+####################################################################################################
 
 install(TARGETS mujoco_node
         DESTINATION lib/${PROJECT_NAME})                                                            # Install so ROS2 can find it

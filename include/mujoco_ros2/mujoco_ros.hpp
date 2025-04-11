@@ -1,9 +1,9 @@
 /**
- * @file   mujoco_node.hpp
+ * @file   mujoco_ros.hpp
  * @author Jon Woolfrey
  * @email  jonathan.woolfrey@gmail.com
- * @date   February 2025
- * @version 1.0
+ * @date   April 2025
+ * @version 1.1
  * @brief  A class for connecting a MuJoCo simulation with ROS2 communication.
  * 
  * @details This class launches a MuJoCo simulation and provides communication channels in ROS2 for controlling it.
@@ -31,7 +31,7 @@ enum ControlMode {POSITION, VELOCITY, TORQUE, UNKNOWN};                         
 /**
  * @brief This class launches both a MuJoCo simulation, and ROS2 node for communication.
  */
-class MuJoCoNode : public rclcpp::Node
+class MuJoCoROS: public rclcpp::Node
 {
     public:
             
@@ -44,12 +44,12 @@ class MuJoCoNode : public rclcpp::Node
          * @param simulationFrequency The rate in Hz to update the simulation
          * @param visualisationFrequency The rate with which to refresh the 3D rendering of the robot, environment
          */
-        MuJoCoNode(const std::string &xmlLocation);
+        MuJoCoROS(const std::string &xmlLocation);
         
        /**
         * @brief Deconstructor.
         */
-        ~MuJoCoNode();
+        ~MuJoCoROS();
         
     private:
 

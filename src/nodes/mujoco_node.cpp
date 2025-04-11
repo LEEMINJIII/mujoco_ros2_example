@@ -1,9 +1,9 @@
 /**
- * @file   executable.cpp
+ * @file   mujoco_node.cpp
  * @author Jon Woolfrey
  * @email  jonathan.woolfrey@gmail.com
- * @date   March 2025
- * @version 1.0
+ * @date   April 2025
+ * @version 1.1
  * @brief  Starts ROS2 and runs the MuJoCoNode.
  * 
  * @details This contains the main() function for the C++ executable.
@@ -16,7 +16,7 @@
  * @see https://mujoco.org/ for more information about MuJoCo
  * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
-#include <mujoco_ros2/mujoco_node.hpp>
+#include <mujoco_ros2/mujoco_ros.hpp>
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     
     try
     {
-        auto mujocoNode = std::make_shared<MuJoCoNode>(xmlPath);
+        auto mujocoNode = std::make_shared<MuJoCoROS>(xmlPath);
     
         rclcpp::spin(mujocoNode);                                                                   // Run indefinitely
         

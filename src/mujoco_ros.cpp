@@ -1,9 +1,9 @@
 /**
- * @file   mujoco_node.cpp
+ * @file   mujoco_ros.cpp
  * @author Jon Woolfrey
  * @email  jonathan.woolfrey@gmail.com
- * @date   February 2025
- * @version 1.0
+ * @date   April 2025
+ * @version 1.1
  * @brief  A class for connecting a MuJoCo simulation with ROS2 communication.
  * 
  * @details This class launches a MuJoCo simulation and provides communication channels in ROS2 for controlling it.
@@ -16,12 +16,12 @@
  * @see https://docs.ros.org/en/humble/index.html for ROS 2 documentation
  */
  
-#include <mujoco_ros2/mujoco_node.hpp>
+#include <mujoco_ros2/mujoco_ros.hpp>
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                         Constructor                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-MuJoCoNode::MuJoCoNode(const std::string &xmlLocation) : Node("mujoco_node")
+MuJoCoROS::MuJoCoROS(const std::string &xmlLocation) : Node("mujoco_node")
 {
     // Declare & get parameters for this node
     std::string jointStateTopicName   = this->declare_parameter<std::string>("joint_state_topic_name", "joint_state");
@@ -59,13 +59,13 @@ MuJoCoNode::MuJoCoNode(const std::string &xmlLocation) : Node("mujoco_node")
 
     // Create timers
     _simTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/_simFrequency)),
-                                        std::bind(&MuJoCoNode::update_simulation, this));
+                                        std::bind(&MuJoCoROS::update_simulation, this));
                                         
     _visTimer = this->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000/visualisationFrequency)),
-                                        std::bind(&MuJoCoNode::update_visualization, this));
+                                        std::bind(&MuJoCoROS::update_visualization, this));
 
    // Create joint state publisher and joint command subscriber
-    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointCommandTopicName, 1,  std::bind(&MuJoCoNode::joint_command_callback, this, std::placeholders::_1));
+    _jointCommandSubscriber = this->create_subscription<std_msgs::msg::Float64MultiArray>(jointCommandTopicName, 1,  std::bind(&MuJoCoROS::joint_command_callback, this, std::placeholders::_1));
     
     _jointStatePublisher = this->create_publisher<sensor_msgs::msg::JointState>(jointStateTopicName, 1);
                       
@@ -112,7 +112,7 @@ MuJoCoNode::MuJoCoNode(const std::string &xmlLocation) : Node("mujoco_node")
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                    Update the simulation                                       //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void MuJoCoNode::update_simulation()
+void MuJoCoROS::update_simulation()
 {
     if (not _model and not _jointState)
     {
@@ -151,7 +151,7 @@ void MuJoCoNode::update_simulation()
  //                                    Handle joint commands                                       //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-MuJoCoNode::joint_command_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+MuJoCoROS::joint_command_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg)
 {
     if (msg->data.size() != _model->nq)
     {
@@ -200,7 +200,7 @@ MuJoCoNode::joint_command_callback(const std_msgs::msg::Float64MultiArray::Share
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                    Update the 3D simulation                                    //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void MuJoCoNode::update_visualization()
+void MuJoCoROS::update_visualization()
 {
     glfwMakeContextCurrent(_window);                                                                // Ensure OpenGL context is current
     
@@ -221,7 +221,7 @@ void MuJoCoNode::update_visualization()
   ////////////////////////////////////////////////////////////////////////////////////////////////////
  //                                           Destructor                                           //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-MuJoCoNode::~MuJoCoNode()
+MuJoCoROS::~MuJoCoROS()
 {
     mj_deleteData(_jointState);
     mj_deleteModel(_model);
