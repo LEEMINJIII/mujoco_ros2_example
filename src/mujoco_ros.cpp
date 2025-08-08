@@ -92,7 +92,7 @@ MuJoCoROS::MuJoCoROS(const std::string &xmlLocation) : Node("mujoco_node")
     _camera.azimuth      = this->declare_parameter<double>("camera_azimuth", 135);    
     _camera.distance     = this->declare_parameter<double>("camera_distance", 2.5);
     _camera.elevation    = this->declare_parameter<double>("camera_elevation", -35);
-    _camera.orthographic = this->declare_parameter<bool>("camera_orthographic", true);
+    //_camera.orthographic = this->declare_parameter<bool>("camera_orthographic", true);
     
     auto focalPoint = this->declare_parameter<std::vector<double>>("camera_focal_point", {0.0, 0.0, 0.5});
     
