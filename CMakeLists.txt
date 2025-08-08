@@ -2,7 +2,7 @@
 #                                         PROJECT INFORMATION                                      #
 ####################################################################################################
 cmake_minimum_required(VERSION 3.5)
-project(mujoco_ros2)
+project(mujoco_ros2_example)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
